@@ -4,18 +4,19 @@ import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 
 import uk.co.todddavies.literarylog.api.ApiInterface;
-import uk.co.todddavies.literarylog.models.ReadingModule;
 
-public class ReadingApiModule extends AbstractModule {
+/**
+ * Web server module for the Reading API.
+ * Binds the API interface to the Rapidoid server.
+ */
+public final class ReadingApiModule extends AbstractModule {
 
   public ReadingApiModule(Multibinder<ApiInterface> apis) {
     // Configure web service bindings here
-    apis.addBinding().to(ReadingInterface.class);
+    apis.addBinding().to(ReadingApiInterface.class);
   }
   
   @Override
-  protected void configure() {
-    install(new ReadingModule());
-  }
+  protected void configure() {}
 
 }

@@ -28,6 +28,11 @@
 	    <version>5.0.10</version>
 	</dependency>
 	<dependency>
+	    <groupId>org.rapidoid</groupId>
+	    <artifactId>rapidoid-u</artifactId>
+	    <version>5.0.11</version>
+	</dependency>
+	<dependency>
 	  <groupId>com.google.inject</groupId>
 	  <artifactId>guice</artifactId>
 	  <version>4.0</version>

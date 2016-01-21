@@ -7,7 +7,10 @@ import com.google.inject.multibindings.Multibinder;
 
 import uk.co.todddavies.literarylog.api.reading.ReadingApiModule;
 
-public class ServerModule extends AbstractModule {
+/**
+ * Module for configuring the Rapidoid server
+ */
+public final class ServerModule extends AbstractModule {
   
   public ServerModule(String[] args) {
     // Configures Rapidoid
