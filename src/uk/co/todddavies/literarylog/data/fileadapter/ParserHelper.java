@@ -1,4 +1,4 @@
-package uk.co.todddavies.literarylog.storage.fileadapter;
+package uk.co.todddavies.literarylog.data.fileadapter;
 
 import com.google.common.base.Optional;
 

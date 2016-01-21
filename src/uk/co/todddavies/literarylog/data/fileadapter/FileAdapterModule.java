@@ -1,11 +1,11 @@
-package uk.co.todddavies.literarylog.storage.fileadapter;
+package uk.co.todddavies.literarylog.data.fileadapter;
 
 import java.nio.file.Path;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-import uk.co.todddavies.literarylog.storage.ReadingStorageAdapter;
+import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 
 /**
  * Module for the ReadingFileAdapter.

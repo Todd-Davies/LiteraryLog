@@ -6,13 +6,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import uk.co.todddavies.literarylog.models.Reading;
+import uk.co.todddavies.literarylog.models.Type;
 
 /**
  * Helper class for JSON serialisation.
  */
 public final class JsonSerializer {
 
-  private static final String TYPE = "article";
+  private static final ImmutableMap<Type, String> TYPE_MAP = ImmutableMap.of(Type.ARTICLE, "article", Type.BOOK, "book");
   
   private JsonSerializer() {}
   
@@ -22,7 +23,7 @@ public final class JsonSerializer {
     output.put("description", reading.description);
     output.put("id", Integer.toString(reading.id));
     output.put("status", reading.status.toString());
-    output.put("type", TYPE);
+    output.put("type", TYPE_MAP.get(reading.type));
     if (reading.rating.isPresent()) output.put("rating", Integer.toString(reading.rating.get()));
     return output.build();
   }

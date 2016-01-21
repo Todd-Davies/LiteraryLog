@@ -11,16 +11,18 @@ public final class Reading {
   public final String description;
   public final int id;
   public final Status status;
+  public final Type type;
   public final Optional<Integer> rating;
   public final Optional<String> link;
   
-  private Reading(String name, String description, Status status, Optional<Integer> rating,
-      Optional<String> link) {
+  private Reading(String name, String description, Status status, Type type,
+      Optional<Integer> rating, Optional<String> link) {
     this.name = name;
     this.description = description;
     this.status = status;
     this.rating = rating;
     this.link = link;
+    this.type = type;
     // Compute the hash
     int hash = 19;
     hash = 37 * hash + name.hashCode();
@@ -45,17 +47,18 @@ public final class Reading {
     private String name;
     private String description;
     private Status status;
+    private Type type;
     private Optional<Integer> rating = Optional.absent();
     private Optional<String> link = Optional.absent();
     
     private Builder() {}
     
     public Reading build() {
-      return new Reading(name, description, status, rating, link);
+      return new Reading(name, description, status, type, rating, link);
     }
     
     public boolean isComplete() {
-      return name != null && description != null && status != null;
+      return name != null && description != null && status != null && type != null;
     };
 
     public String getName() {
@@ -96,6 +99,14 @@ public final class Reading {
 
     public void setLink(String link) {
       this.link = Optional.of(link);
+    }
+
+    public Type getType() {
+      return type;
+    }
+
+    public void setType(Type type) {
+      this.type = type;
     }
   }  
 }

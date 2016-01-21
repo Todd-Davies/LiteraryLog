@@ -9,14 +9,15 @@ import com.google.inject.Injector;
 
 import uk.co.todddavies.literarylog.api.ServerModule;
 import uk.co.todddavies.literarylog.api.ServerService;
-import uk.co.todddavies.literarylog.storage.fileadapter.FileAdapterModule;
+import uk.co.todddavies.literarylog.data.fileadapter.FileAdapterModule;
+import uk.co.todddavies.literarylog.data.goodreads.GoodreadsApiAdapterModule;
 
 /**
  * Main entry point for the app.
  */
 public final class LiteraryLog {
   
-  public static void main(String[] args) {
+  public static void main(String[] args) {    
     // Parse the arguments into a map
     HashMap<String, String> argMap = ArgsParser.parseArgs(args);
     if (!argMap.containsKey("readingsPath")) {

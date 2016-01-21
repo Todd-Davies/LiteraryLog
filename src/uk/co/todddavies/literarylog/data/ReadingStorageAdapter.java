@@ -1,4 +1,4 @@
-package uk.co.todddavies.literarylog.storage;
+package uk.co.todddavies.literarylog.data;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;

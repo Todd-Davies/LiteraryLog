@@ -9,9 +9,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
 import uk.co.todddavies.literarylog.api.ApiInterface;
+import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 import uk.co.todddavies.literarylog.models.Reading;
 import uk.co.todddavies.literarylog.models.Status;
-import uk.co.todddavies.literarylog.storage.ReadingStorageAdapter;
 
 /**
  * Defines and implements the reading API. 

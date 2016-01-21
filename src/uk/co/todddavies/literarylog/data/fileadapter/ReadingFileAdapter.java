@@ -1,4 +1,4 @@
-package uk.co.todddavies.literarylog.storage.fileadapter;
+package uk.co.todddavies.literarylog.data.fileadapter;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -15,9 +15,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 
+import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 import uk.co.todddavies.literarylog.models.Reading;
 import uk.co.todddavies.literarylog.models.Status;
-import uk.co.todddavies.literarylog.storage.ReadingStorageAdapter;
 
 /**
  * Adapter for loading <code>Reading</code>s from files in a directory.
