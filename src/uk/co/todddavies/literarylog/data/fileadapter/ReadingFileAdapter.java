@@ -21,7 +21,7 @@ import uk.co.todddavies.literarylog.models.Status;
 
 /**
  * Adapter for loading <code>Reading</code>s from files in a directory.
- * Looks at all files in a directory and treats each one as a separate reading.
+ * Looks at all files in a directory (plus subdirectories) and treats each one as a separate reading.
  */
 final class ReadingFileAdapter implements ReadingStorageAdapter {
 
@@ -32,9 +32,14 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
   private static final CacheLoader<Path, Optional<Reading>> READING_LOADER =
       new CacheLoader<Path, Optional<Reading>>() {   
     @Override
-    public Optional<Reading> load(Path path) throws Exception {
-      String content = com.google.common.io.Files.toString(path.toFile(), Charset.defaultCharset());
-      return ParserHelper.parseReading(content);
+    public Optional<Reading> load(Path path) {
+      try {
+        String content = com.google.common.io.Files.toString(path.toFile(), Charset.defaultCharset());
+        return ParserHelper.parseReading(content);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return Optional.absent();
+      }
     }    
   };
   
@@ -48,35 +53,34 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
         .maximumSize(1500)
         .build(READING_LOADER);
   }
-
+  
   /**
    * Tries to load a reading that satisfies the predicate. The first available reading is loaded.
+   * TODO: Make this not scan all readings.
    */
   private Optional<Reading> selectReading(Predicate<Reading> predicate) {
-    try(DirectoryStream<Path> stream = Files.newDirectoryStream(storageDirectory)) {
-      for (Path file : stream) {
-        Optional<Reading> reading = cache.get(file);
-        if (reading.isPresent() && predicate.apply(reading.get())) {
-          return reading;
-        }
-      }
-    } catch (IOException | ExecutionException e) {
-      // Convert to runtime exception to be caught higher up
-      throw new RuntimeException(e);
-    }
-    return Optional.absent();
+    ImmutableList<Reading> satisfied = selectReadings(storageDirectory, cache, predicate);
+    return (satisfied.size() > 0)
+        ? Optional.<Reading>of(satisfied.get(0))
+        : Optional.<Reading>absent(); 
   }
   
   /**
    * Loads all readings that satisfy a predicate.
    */
-  private ImmutableList<Reading> selectReadings(Predicate<Reading> predicate) {
+  private static ImmutableList<Reading> selectReadings(Path path,
+      LoadingCache<Path, Optional<Reading>> cache,
+      Predicate<Reading> predicate) {
     ImmutableList.Builder<Reading> list = new ImmutableList.Builder<>();
-    try(DirectoryStream<Path> stream = Files.newDirectoryStream(storageDirectory)) {
+    try(DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
       for (Path file : stream) {
-        Optional<Reading> reading = cache.get(file);
-        if (reading.isPresent() && predicate.apply(reading.get())) {
-          list.add(reading.get());
+        if (file.toFile().isDirectory()) {
+          list.addAll(selectReadings(file, cache, predicate));
+        } else {
+          Optional<Reading> reading = cache.get(file);
+          if (reading.isPresent() && predicate.apply(reading.get())) {
+            list.add(reading.get());
+          }
         }
       }
     } catch (IOException | ExecutionException e) {
@@ -88,7 +92,7 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
   
   @Override
   public ImmutableList<Reading> getReadings() {
-    return selectReadings(TRUE_PREDICATE);
+    return selectReadings(storageDirectory, cache, TRUE_PREDICATE);
   }
 
   @Override
@@ -103,7 +107,7 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
   @Override
   public ImmutableList<Reading> getReadingsWithStatus(final Status status) {
     final Status finalStatus = status;
-    return selectReadings(new Predicate<Reading>() {
+    return selectReadings(storageDirectory, cache, new Predicate<Reading>() {
       @Override public boolean apply(Reading reading) {
         return reading.status == finalStatus;
       }});
