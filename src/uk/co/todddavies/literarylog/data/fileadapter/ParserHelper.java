@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 
 import uk.co.todddavies.literarylog.models.Reading;
 import uk.co.todddavies.literarylog.models.Status;
+import uk.co.todddavies.literarylog.models.Type;
 
 /**
  * Helper methods for parsing readings
@@ -38,6 +39,8 @@ final class ParserHelper {
           return Optional.absent();
       }
     }
+    // All local readings are articles
+    builder.setType(Type.ARTICLE);
     return builder.isComplete() ? Optional.of(builder.build()) : Optional.<Reading>absent();
   }
   

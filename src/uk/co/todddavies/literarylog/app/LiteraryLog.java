@@ -9,8 +9,7 @@ import com.google.inject.Injector;
 
 import uk.co.todddavies.literarylog.api.ServerModule;
 import uk.co.todddavies.literarylog.api.ServerService;
-import uk.co.todddavies.literarylog.data.fileadapter.FileAdapterModule;
-import uk.co.todddavies.literarylog.data.goodreads.GoodreadsApiAdapterModule;
+import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule;
 
 /**
  * Main entry point for the app.
@@ -27,7 +26,7 @@ public final class LiteraryLog {
     
     // Reconstruct the remaining arguments for the server
     args = ArgsParser.toStringArray(argMap);
-    Injector injector = Guice.createInjector(new ServerModule(args), new FileAdapterModule(readingsPath));
+    Injector injector = Guice.createInjector(new ServerModule(args), new CollatedReadingAdapterModule(readingsPath));
     
     ServerService service = injector.getInstance(ServerService.class);
     service.start();

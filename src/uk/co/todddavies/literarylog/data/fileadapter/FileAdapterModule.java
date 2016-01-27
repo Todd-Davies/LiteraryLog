@@ -1,8 +1,12 @@
 package uk.co.todddavies.literarylog.data.fileadapter;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.file.Path;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.BindingAnnotation;
+import com.google.inject.Inject;
 import com.google.inject.Provides;
 
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
@@ -13,17 +17,24 @@ import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
  */
 public final class FileAdapterModule extends AbstractModule {
 
-  private final ReadingFileAdapter fileAdapter;
-  
-  public FileAdapterModule(Path storageDirectory) {
-    fileAdapter = new ReadingFileAdapter(storageDirectory);
-  }
+  private ReadingFileAdapter fileAdapter;
   
   @Override
   protected void configure() {}
   
+  @Inject
   @Provides
-  ReadingStorageAdapter readingStorageAdapterProvider() {
+  @LocalReadings
+  ReadingStorageAdapter readingStorageAdapterProvider(@StorageDirectory Path storageDirectory) {
+    if (fileAdapter == null) {
+      fileAdapter = new ReadingFileAdapter(storageDirectory);
+    }
     return fileAdapter;
   }
+  
+  @BindingAnnotation
+  public @interface StorageDirectory {}
+  
+  @BindingAnnotation @Retention(RetentionPolicy.RUNTIME)
+  public @interface LocalReadings {}
 }

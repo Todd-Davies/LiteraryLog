@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 
 import uk.co.todddavies.literarylog.api.ApiInterface;
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
+import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule.CollatedReadings;
 import uk.co.todddavies.literarylog.models.Reading;
 import uk.co.todddavies.literarylog.models.Status;
 
@@ -22,7 +23,7 @@ public final class ReadingApiInterface implements ApiInterface {
   private final ReadingStorageAdapter adapter;
   
   @Inject
-  public ReadingApiInterface(ReadingStorageAdapter adapter) {
+  public ReadingApiInterface(@CollatedReadings ReadingStorageAdapter adapter) {
     this.adapter = adapter;
   }
   
