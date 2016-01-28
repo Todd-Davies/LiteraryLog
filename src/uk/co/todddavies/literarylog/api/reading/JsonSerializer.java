@@ -24,6 +24,7 @@ public final class JsonSerializer {
     output.put("id", Integer.toString(reading.id));
     output.put("status", reading.status.toString());
     output.put("type", TYPE_MAP.get(reading.type));
+    if (reading.link.isPresent()) output.put("link", reading.link.get());
     if (reading.rating.isPresent()) output.put("rating", Integer.toString(reading.rating.get()));
     return output.build();
   }
