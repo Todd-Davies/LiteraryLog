@@ -18,6 +18,9 @@ import uk.co.todddavies.literarylog.models.Reading;
 import uk.co.todddavies.literarylog.models.Status;
 import uk.co.todddavies.literarylog.models.Type;
 
+/**
+ * Helper class for parsing responses from the Goodreads API
+ */
 final class GoodreadsApiParserHelper {
 
   private GoodreadsApiParserHelper() {}

@@ -14,7 +14,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
+import uk.co.todddavies.literarylog.data.ReadingHelper;
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 import uk.co.todddavies.literarylog.models.Reading;
 import uk.co.todddavies.literarylog.models.Status;
@@ -106,10 +108,17 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
 
   @Override
   public ImmutableList<Reading> getReadingsWithStatus(final Status status) {
-    final Status finalStatus = status;
     return selectReadings(storageDirectory, cache, new Predicate<Reading>() {
       @Override public boolean apply(Reading reading) {
-        return reading.status == finalStatus;
+        return reading.status == status;
       }});
-  }  
+  }
+
+  @Override
+  public ImmutableList<Reading> search(final ImmutableMap<String, String> params) {
+    return selectReadings(storageDirectory, cache, new Predicate<Reading>() {
+      @Override public boolean apply(Reading reading) {
+        return ReadingHelper.doesMatch(reading, params);
+      }});
+  } 
 }

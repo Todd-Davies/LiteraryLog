@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
@@ -52,6 +53,15 @@ final class CollatedReadingAdapter implements ReadingStorageAdapter {
       if (reading.isPresent()) return reading;
     }
     return Optional.absent();
+  }
+
+  @Override
+  public ImmutableList<Reading> search(ImmutableMap<String, String> params) {
+    ImmutableList.Builder<Reading> out = ImmutableList.builder();
+    for (ReadingStorageAdapter adapter : adapters) {
+      out.addAll(adapter.search(params));
+    }
+    return out.build();
   }
 
 }

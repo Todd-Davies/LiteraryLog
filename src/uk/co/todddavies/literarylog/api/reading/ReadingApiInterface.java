@@ -1,5 +1,7 @@
 package uk.co.todddavies.literarylog.api.reading;
 
+import java.util.Map;
+
 import org.rapidoid.annotation.Controller;
 import org.rapidoid.annotation.GET;
 
@@ -53,6 +55,13 @@ public final class ReadingApiInterface implements ApiInterface {
   @GET(uri="/to-read")
   public ImmutableList<ImmutableMap<String, String>> toread() { 
     return JsonSerializer.readingsToJson(adapter.getReadingsWithStatus(Status.PENDING));
+  }
+  
+  @GET(uri="/search")
+  public ImmutableList<ImmutableMap<String, String>> search(Map<String, String> params) {
+    return JsonSerializer.readingsToJson(
+        adapter.search(
+            ImmutableMap.<String, String>builder().putAll(params).build()));
   }
   
   
