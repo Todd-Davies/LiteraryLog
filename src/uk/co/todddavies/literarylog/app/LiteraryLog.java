@@ -16,12 +16,18 @@ import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule;
  */
 public final class LiteraryLog {
   
+  // Example args:
+  // port=8080 address=localhost readingsPath="C://Users/Todd/Desktop/readings"
+  private static void validateArgs(HashMap<String, String> args) {
+    if (!args.containsKey("readingsPath")) {
+      throw new RuntimeException("'readingsPath' argument required!");
+    }
+  }
+  
   public static void main(String[] args) {    
     // Parse the arguments into a map
     HashMap<String, String> argMap = ArgsParser.parseArgs(args);
-    if (!argMap.containsKey("readingsPath")) {
-      throw new RuntimeException("'readingsPath' argument required!");
-    }
+    validateArgs(argMap);
     Path readingsPath = Paths.get(argMap.remove("readingsPath"));
     
     // Reconstruct the remaining arguments for the server
