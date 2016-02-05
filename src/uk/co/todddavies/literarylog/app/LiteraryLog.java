@@ -46,8 +46,8 @@ public final class LiteraryLog {
     Integer seed = Integer.parseInt(argMap.remove(Args.ARG_SEED));
     String twilioId = argMap.remove(Args.ARG_TWILIO_ID);
     String twilioToken = argMap.remove(Args.ARG_TWILIO_TOKEN);
-    String twilioNumber = argMap.remove(Args.ARG_TWILIO_NUMBER);
     String authNumber = argMap.remove(Args.ARG_AUTH_NUMBER);
+    String twilioNumber = argMap.remove(Args.ARG_TWILIO_NUMBER);
     String url = String.format("http://%s:%s", 
         argMap.get(Args.ARG_ADDRESS), argMap.get(Args.ARG_PORT));
     
@@ -60,8 +60,8 @@ public final class LiteraryLog {
         new TwilioAuthProviderModule(
             twilioId,
             twilioToken,
-            twilioNumber,
             authNumber,
+            twilioNumber,
             url + "/authenticate"));
     
     ServerService service = injector.getInstance(ServerService.class);

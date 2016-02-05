@@ -33,6 +33,9 @@ public final class ReadingApiInterface implements ApiInterface {
   private final Random numberGen;
   private final AuthProvider authProvider;
   
+  private final String AUTH_MESSAGE = "Check your phone for a confirmation code.";
+  private final String FAIL_MESSAGE = "Unable to authenticate you. Sorry!";
+  
   @Inject
   private ReadingApiInterface(@CollatedReadings ReadingStorageAdapter adapter,
       @Seed Integer seed,
@@ -90,11 +93,15 @@ public final class ReadingApiInterface implements ApiInterface {
   }
   
   @GET(uri="/createReading")
-  public boolean createReading() {
+  public String createReading() {
     String code = generateCode();
     Reading reading = Reading.newBuilder("name", "descr", Status.PENDING, Type.ARTICLE).build();
     authMapping.put(code, reading);
-    return authProvider.sendAuthCode(code);
+    if (authProvider.sendAuthCode(code)) {
+      return AUTH_MESSAGE;
+    } else {
+      return FAIL_MESSAGE;
+    }
   }
   
   @GET
