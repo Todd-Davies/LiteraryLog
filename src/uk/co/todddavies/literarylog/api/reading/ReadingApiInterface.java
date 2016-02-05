@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 
 import uk.co.todddavies.literarylog.api.ApiInterface;
 import uk.co.todddavies.literarylog.app.Annotations.Seed;
+import uk.co.todddavies.literarylog.auth.AuthProvider;
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule.CollatedReadings;
 import uk.co.todddavies.literarylog.models.Reading;
@@ -30,13 +31,16 @@ public final class ReadingApiInterface implements ApiInterface {
   
   private final Map<String, Reading> authMapping;
   private final Random numberGen;
+  private final AuthProvider authProvider;
   
   @Inject
   private ReadingApiInterface(@CollatedReadings ReadingStorageAdapter adapter,
-      @Seed Integer seed) {
+      @Seed Integer seed,
+      AuthProvider authProvider) {
     this.adapter = adapter;
-    authMapping = new HashMap<>();
-    numberGen = new Random(seed);
+    this.authMapping = new HashMap<>();
+    this.numberGen = new Random(seed);
+    this.authProvider = authProvider;
   }
   
   @GET(uri="/")
@@ -90,8 +94,7 @@ public final class ReadingApiInterface implements ApiInterface {
     String code = generateCode();
     Reading reading = Reading.newBuilder("name", "descr", Status.PENDING, Type.ARTICLE).build();
     authMapping.put(code, reading);
-    // TODO: Send via twilio
-    return false;
+    return authProvider.sendAuthCode(code);
   }
   
   @GET

@@ -3,6 +3,9 @@ package uk.co.todddavies.literarylog.app;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+/**
+ * Provides helper methods for parsing command line args
+ */
 final class ArgsParser {
 
   private ArgsParser() {}
