@@ -10,10 +10,13 @@ import uk.co.todddavies.literarylog.models.Type;
  * Helper methods for parsing readings
  */
 final class ParserHelper {
+  
+  private static final Type DEFAULT_TYPE = Type.ARTICLE;
 
   static Optional<Reading> parseReading(String input) {
     String[] lines = input.split("\n");
     Reading.Builder builder = Reading.newBuilder();
+    builder.setType(DEFAULT_TYPE);
     for (String line : lines) {
       int splitIndex = line.indexOf(':');
       if (splitIndex == -1) return Optional.absent();
@@ -30,7 +33,18 @@ final class ParserHelper {
         builder.setRating(Integer.parseInt(content));
         break;
       case "status":
-        builder.setStatus(Status.fromInteger(Integer.parseInt(content)));
+        try {
+          builder.setStatus(Status.fromInteger(Integer.parseInt(content)));
+        } catch (NumberFormatException e) {
+          builder.setStatus(Status.valueOf(content.toUpperCase()));
+        }
+        break;
+      case "type":
+        try {
+        builder.setType(Type.fromInteger(Integer.parseInt(content)));
+      } catch (NumberFormatException e) {
+        builder.setType(Type.valueOf(content.toUpperCase()));
+      }
         break;
       case "link":
         builder.setLink(content);
@@ -39,8 +53,6 @@ final class ParserHelper {
           return Optional.absent();
       }
     }
-    // All local readings are articles
-    builder.setType(Type.ARTICLE);
     return builder.isComplete() ? Optional.of(builder.build()) : Optional.<Reading>absent();
   }
   
