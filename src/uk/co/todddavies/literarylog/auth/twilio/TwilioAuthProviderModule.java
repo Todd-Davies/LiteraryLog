@@ -16,8 +16,9 @@ public final class TwilioAuthProviderModule extends AbstractModule {
       String token,
       String toNumber,
       String fromNumber,
-      String url) {
-    provider = new TwilioAuthProvider(id, token, toNumber, fromNumber, url);
+      String url,
+      int timeout) {
+    provider = new TwilioAuthProvider(id, token, toNumber, fromNumber, url, timeout);
   }
   
   @Override

@@ -26,6 +26,7 @@ public final class LiteraryLog {
           Args.ARG_SEED,
           Args.ARG_TWILIO_ID, Args.ARG_TWILIO_TOKEN,
           Args.ARG_TWILIO_NUMBER, Args.ARG_AUTH_NUMBER,
+          Args.ARG_TWILIO_TIMEOUT,
           Args.ARG_ADDRESS, Args.ARG_PORT);
   
   private static void validateArgs(HashMap<String, String> args) {
@@ -48,6 +49,7 @@ public final class LiteraryLog {
     String twilioNumber = argMap.remove(Args.ARG_TWILIO_NUMBER);
     String url = String.format("http://%s:%s", 
         argMap.get(Args.ARG_ADDRESS), argMap.get(Args.ARG_PORT));
+    int twilioTimeout = Integer.parseInt(argMap.remove(Args.ARG_TWILIO_TIMEOUT));
     
     // Reconstruct the remaining arguments for the server
     args = ArgsParser.toStringArray(argMap);
@@ -60,7 +62,8 @@ public final class LiteraryLog {
             twilioToken,
             authNumber,
             twilioNumber,
-            url + "/auth"));
+            url + "/auth",
+            twilioTimeout));
     
     ServerService service = injector.getInstance(ServerService.class);
     service.start();
