@@ -42,6 +42,11 @@ public final class Reading {
     return new Builder();
   }
   
+  public static Builder newBuilder(String name, String description, Status status,
+      Type type) {
+    return new Builder(name, description, status, type);
+  }
+  
   // TODO: Improve the interface in-line with Effective Java
   public static final class Builder {
     private String name;
@@ -52,6 +57,13 @@ public final class Reading {
     private Optional<String> link = Optional.absent();
     
     private Builder() {}
+    
+    private Builder(String name, String description, Status status, Type type) {
+      this.name = name;
+      this.description = description;
+      this.status = status;
+      this.type = type;
+    }
     
     public Reading build() {
       return new Reading(name, description, status, type, rating, link);
