@@ -28,8 +28,6 @@ public final class LiteraryLog {
           Args.ARG_TWILIO_NUMBER, Args.ARG_AUTH_NUMBER,
           Args.ARG_ADDRESS, Args.ARG_PORT);
   
-  // Example args:
-  // port=8080 address=localhost readingsPath="C://Users/Todd/Desktop/readings" seed=213234
   private static void validateArgs(HashMap<String, String> args) {
     for (String arg : REQUIRED_ARGS) {
       if (!args.containsKey(arg)) {
@@ -62,7 +60,7 @@ public final class LiteraryLog {
             twilioToken,
             authNumber,
             twilioNumber,
-            url + "/authenticate"));
+            url + "/auth"));
     
     ServerService service = injector.getInstance(ServerService.class);
     service.start();

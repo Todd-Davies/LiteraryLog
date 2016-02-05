@@ -32,7 +32,7 @@ final class TwilioAuthProvider implements AuthProvider {
   public boolean sendAuthCode(String code) {
     try {
       ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-      params.add(new BasicNameValuePair("Body", url + code));
+      params.add(new BasicNameValuePair("Body", url + '/' + code));
       params.add(new BasicNameValuePair("To", toNumber));
       params.add(new BasicNameValuePair("From", fromNumber));
    

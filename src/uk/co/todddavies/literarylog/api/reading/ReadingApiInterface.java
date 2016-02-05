@@ -34,7 +34,10 @@ public final class ReadingApiInterface implements ApiInterface {
   private final AuthProvider authProvider;
   
   private final String AUTH_MESSAGE = "Check your phone for a confirmation code.";
-  private final String FAIL_MESSAGE = "Unable to authenticate you. Sorry!";
+  private final String FAIL_MESSAGE = "Something went wrong :(";
+  private final String INVALID_MESSAGE = "Invalid parameters";
+  private final String AUTH_SUCCESS = "Reading added!";
+  private final String AUTH_FAIL = "Invalid auth code.";
   
   @Inject
   private ReadingApiInterface(@CollatedReadings ReadingStorageAdapter adapter,
@@ -93,23 +96,42 @@ public final class ReadingApiInterface implements ApiInterface {
   }
   
   @GET(uri="/createReading")
-  public String createReading() {
+  public String createReading(Map<String, String> params) {
     String code = generateCode();
-    Reading reading = Reading.newBuilder("name", "descr", Status.PENDING, Type.ARTICLE).build();
-    authMapping.put(code, reading);
-    if (authProvider.sendAuthCode(code)) {
-      return AUTH_MESSAGE;
-    } else {
-      return FAIL_MESSAGE;
+    try {
+      Reading.Builder readingBuilder = Reading.newBuilder(
+          params.get("name"),
+          params.get("description"),
+          Status.valueOf(params.get("status").toUpperCase()),
+          Type.valueOf(params.get("type").toUpperCase()));
+      if (params.containsKey("rating")) {
+        readingBuilder.setRating(Integer.parseInt(params.get("rating")));
+      }
+      if (params.containsKey("link")) {
+        readingBuilder.setLink(params.get("link"));
+      }
+      authMapping.put(code, readingBuilder.build());
+      if (authProvider.sendAuthCode(code)) {
+        return AUTH_MESSAGE;
+      } else {
+        return FAIL_MESSAGE;
+      } 
+    } catch (Exception e) {
+      return INVALID_MESSAGE;
     }
   }
   
   @GET
-  public boolean auth(String code) {
+  public String auth(String code) {
     if (authMapping.containsKey(code)) {
-      return adapter.createReading(authMapping.get(code));
+      Reading reading = authMapping.remove(code);
+      if (adapter.createReading(reading)) {
+        return AUTH_SUCCESS;
+      } else {
+        return AUTH_FAIL;
+      }
     } else {
-      return false;
+      return FAIL_MESSAGE;
     }
   }
   
