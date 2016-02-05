@@ -64,4 +64,17 @@ final class CollatedReadingAdapter implements ReadingStorageAdapter {
     return out.build();
   }
 
+  /**
+   * Tries to create a reading with each storage adapter.
+   * Returns true if one succeeds.
+   * TODO (Todd-Davies): Prioritise some adapters over others.
+   */
+  @Override
+  public boolean createReading(Reading reading) {
+    for (ReadingStorageAdapter adapter : adapters) {
+      if (adapter.createReading(reading)) return true;
+    }
+    return false;
+  }
+
 }

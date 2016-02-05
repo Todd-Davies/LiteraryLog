@@ -30,4 +30,9 @@ public interface ReadingStorageAdapter {
    */
   public ImmutableList<Reading> search(ImmutableMap<String, String> params);
   
+  /**
+   * Creates a new <code>Reading</code>
+   */
+  public boolean createReading(Reading reading);
+  
 }

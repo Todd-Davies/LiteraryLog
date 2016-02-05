@@ -10,9 +10,14 @@ import uk.co.todddavies.literarylog.models.Type;
  * Helper methods for parsing readings
  */
 final class ParserHelper {
-  
+
+  // The default type for a reading if it is not set
+  // For backwards compatibility when this was not required
   private static final Type DEFAULT_TYPE = Type.ARTICLE;
 
+  /**
+   * Parses a Reading from a String
+   */
   static Optional<Reading> parseReading(String input) {
     String[] lines = input.split("\n");
     Reading.Builder builder = Reading.newBuilder();
@@ -41,10 +46,10 @@ final class ParserHelper {
         break;
       case "type":
         try {
-        builder.setType(Type.fromInteger(Integer.parseInt(content)));
-      } catch (NumberFormatException e) {
-        builder.setType(Type.valueOf(content.toUpperCase()));
-      }
+          builder.setType(Type.fromInteger(Integer.parseInt(content)));
+        } catch (NumberFormatException e) {
+          builder.setType(Type.valueOf(content.toUpperCase()));
+        }
         break;
       case "link":
         builder.setLink(content);
@@ -54,6 +59,24 @@ final class ParserHelper {
       }
     }
     return builder.isComplete() ? Optional.of(builder.build()) : Optional.<Reading>absent();
+  }
+  
+  /**
+   * Serialises a Reading into a String.
+   */
+  static String serializeReading(Reading reading) {
+    StringBuilder out = new StringBuilder();
+    out.append("name:" + reading.name).append("\n");
+    out.append("description:" + reading.description).append("\n");
+    out.append("status:" + reading.status.toString()).append("\n");
+    out.append("type:" + reading.type.toString()).append("\n");
+    if (reading.rating.isPresent()) {
+      out.append("rating:" + reading.rating.get().toString()).append("\n");
+    }
+    if (reading.link.isPresent()) {
+      out.append("link:" + reading.link.get()).append("\n");
+    }
+    return out.toString();
   }
   
 }

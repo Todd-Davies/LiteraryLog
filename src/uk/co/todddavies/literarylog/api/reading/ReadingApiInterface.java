@@ -1,6 +1,8 @@
 package uk.co.todddavies.literarylog.api.reading;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.rapidoid.annotation.Controller;
 import org.rapidoid.annotation.GET;
@@ -11,10 +13,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
 import uk.co.todddavies.literarylog.api.ApiInterface;
+import uk.co.todddavies.literarylog.app.Annotations.Seed;
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule.CollatedReadings;
 import uk.co.todddavies.literarylog.models.Reading;
 import uk.co.todddavies.literarylog.models.Status;
+import uk.co.todddavies.literarylog.models.Type;
 
 /**
  * Defines and implements the reading API. 
@@ -24,9 +28,15 @@ public final class ReadingApiInterface implements ApiInterface {
   
   private final ReadingStorageAdapter adapter;
   
+  private final Map<String, Reading> authMapping;
+  private final Random numberGen;
+  
   @Inject
-  public ReadingApiInterface(@CollatedReadings ReadingStorageAdapter adapter) {
+  private ReadingApiInterface(@CollatedReadings ReadingStorageAdapter adapter,
+      @Seed Integer seed) {
     this.adapter = adapter;
+    authMapping = new HashMap<>();
+    numberGen = new Random(seed);
   }
   
   @GET(uri="/")
@@ -64,5 +74,33 @@ public final class ReadingApiInterface implements ApiInterface {
             ImmutableMap.<String, String>builder().putAll(params).build()));
   }
   
+  /**
+   * Generates a new code to be used for authentication
+   */
+  private String generateCode() {
+    Integer key = null;
+    while (key == null && !authMapping.containsKey(key)) {
+      key = numberGen.nextInt(1000000);
+    }
+    return String.format("%06d", key);
+  }
+  
+  @GET(uri="/createReading")
+  public boolean createReading() {
+    String code = generateCode();
+    Reading reading = Reading.newBuilder("name", "descr", Status.PENDING, Type.ARTICLE).build();
+    authMapping.put(code, reading);
+    // TODO: Send via twilio
+    return false;
+  }
+  
+  @GET
+  public boolean auth(String code) {
+    if (authMapping.containsKey(code)) {
+      return adapter.createReading(authMapping.get(code));
+    } else {
+      return false;
+    }
+  }
   
 }

@@ -1,10 +1,11 @@
 package uk.co.todddavies.literarylog.data.fileadapter;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -15,6 +16,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Files;
 
 import uk.co.todddavies.literarylog.data.ReadingHelper;
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
@@ -26,17 +28,26 @@ import uk.co.todddavies.literarylog.models.Status;
  * Looks at all files in a directory (plus subdirectories) and treats each one as a separate reading.
  */
 final class ReadingFileAdapter implements ReadingStorageAdapter {
+  
+  private static final ImmutableMap<Status, String> STATUS_MAP =
+      ImmutableMap.<Status, String>builder()
+      .put(Status.PENDING, "/to-read/")
+      .put(Status.READING, "/reading/")
+      .put(Status.READ, "/read/")
+      .build();
 
   private static final Predicate<Reading> TRUE_PREDICATE = new Predicate<Reading>() {
     @Override public boolean apply(Reading arg0) { return true; }
   };
+  
+  private static final Charset CHARSET = Charset.defaultCharset();
   
   private static final CacheLoader<Path, Optional<Reading>> READING_LOADER =
       new CacheLoader<Path, Optional<Reading>>() {   
     @Override
     public Optional<Reading> load(Path path) {
       try {
-        String content = com.google.common.io.Files.toString(path.toFile(), Charset.defaultCharset());
+        String content = Files.toString(path.toFile(), CHARSET);
         return ParserHelper.parseReading(content);
       } catch (Exception e) {
         e.printStackTrace();
@@ -74,7 +85,7 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
       LoadingCache<Path, Optional<Reading>> cache,
       Predicate<Reading> predicate) {
     ImmutableList.Builder<Reading> list = new ImmutableList.Builder<>();
-    try(DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+    try(DirectoryStream<Path> stream = java.nio.file.Files.newDirectoryStream(path)) {
       for (Path file : stream) {
         if (file.toFile().isDirectory()) {
           list.addAll(selectReadings(file, cache, predicate));
@@ -120,5 +131,36 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
       @Override public boolean apply(Reading reading) {
         return ReadingHelper.doesMatch(reading, params);
       }});
+  }
+
+  @Override
+  public boolean createReading(Reading reading) {
+    // Choose directory & file
+    String directory = storageDirectory + STATUS_MAP.get(reading.status);
+    String fileName = reading.name.replace(" ", "-");
+    // Create content
+    String content = ParserHelper.serializeReading(reading);
+    // Create directory
+    File directoryPath = Paths.get(directory).toFile();
+    if (directoryPath.exists()) {
+      if(!directoryPath.isDirectory()) {
+        // Already a file at this location
+        return false;
+      }
+    } else {
+      // Create the directory (fail if not)
+      if(!directoryPath.mkdir()) return false;
+    }
+    // Create file
+    File filePath = Paths.get(directory + fileName).toFile();
+    // Create and write
+    try {
+      if(!filePath.createNewFile()) return false;
+      Files.write(content, filePath, CHARSET);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
   } 
 }

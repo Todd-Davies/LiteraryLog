@@ -17,10 +17,13 @@ import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule;
 public final class LiteraryLog {
   
   // Example args:
-  // port=8080 address=localhost readingsPath="C://Users/Todd/Desktop/readings"
+  // port=8080 address=localhost readingsPath="C://Users/Todd/Desktop/readings" seed=213234
   private static void validateArgs(HashMap<String, String> args) {
     if (!args.containsKey("readingsPath")) {
       throw new RuntimeException("'readingsPath' argument required!");
+    }
+    if (!args.containsKey("seed")) {
+      throw new RuntimeException("'seed' argument required!");
     }
   }
   
@@ -29,10 +32,14 @@ public final class LiteraryLog {
     HashMap<String, String> argMap = ArgsParser.parseArgs(args);
     validateArgs(argMap);
     Path readingsPath = Paths.get(argMap.remove("readingsPath"));
+    Integer seed = Integer.parseInt(argMap.remove("seed"));
     
     // Reconstruct the remaining arguments for the server
     args = ArgsParser.toStringArray(argMap);
-    Injector injector = Guice.createInjector(new ServerModule(args), new CollatedReadingAdapterModule(readingsPath));
+    Injector injector = Guice.createInjector(
+        new ServerModule(args),
+        new CollatedReadingAdapterModule(readingsPath),
+        new RandomModule(seed));
     
     ServerService service = injector.getInstance(ServerService.class);
     service.start();
