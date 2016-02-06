@@ -1,8 +1,6 @@
 package uk.co.todddavies.literarylog.api.reading;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import org.rapidoid.annotation.Controller;
 import org.rapidoid.annotation.GET;
@@ -13,8 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
 import uk.co.todddavies.literarylog.api.ApiInterface;
-import uk.co.todddavies.literarylog.auth.AuthProvider;
-import uk.co.todddavies.literarylog.auth.random.RandomAnnotations.Seed;
+import uk.co.todddavies.literarylog.api.auth.AuthenticationInterface;
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule.CollatedReadings;
 import uk.co.todddavies.literarylog.models.Reading;
@@ -29,24 +26,17 @@ public final class ReadingApiInterface implements ApiInterface {
   
   private final ReadingStorageAdapter adapter;
   
-  private final Map<String, Reading> authMapping;
-  private final Random numberGen;
-  private final AuthProvider authProvider;
+  private final AuthenticationInterface authInterface;
   
   private final String AUTH_MESSAGE = "Check your phone for a confirmation code.";
   private final String FAIL_MESSAGE = "Something went wrong :(";
   private final String INVALID_MESSAGE = "Invalid parameters";
-  private final String AUTH_SUCCESS = "Reading added!";
-  private final String AUTH_FAIL = "Invalid auth code.";
   
   @Inject
   private ReadingApiInterface(@CollatedReadings ReadingStorageAdapter adapter,
-      @Seed Integer seed,
-      AuthProvider authProvider) {
+      AuthenticationInterface authInterface) {
     this.adapter = adapter;
-    this.authMapping = new HashMap<>();
-    this.numberGen = new Random(seed);
-    this.authProvider = authProvider;
+    this.authInterface = authInterface;
   }
   
   @GET(uri="/")
@@ -84,20 +74,8 @@ public final class ReadingApiInterface implements ApiInterface {
             ImmutableMap.<String, String>builder().putAll(params).build()));
   }
   
-  /**
-   * Generates a new code to be used for authentication
-   */
-  private String generateCode() {
-    Integer key = null;
-    while (key == null && !authMapping.containsKey(key)) {
-      key = numberGen.nextInt(1000000);
-    }
-    return String.format("%06d", key);
-  }
-  
   @GET(uri="/createReading")
   public String createReading(Map<String, String> params) {
-    String code = generateCode();
     try {
       Reading.Builder readingBuilder = Reading.newBuilder(
           params.get("name"),
@@ -110,8 +88,12 @@ public final class ReadingApiInterface implements ApiInterface {
       if (params.containsKey("link")) {
         readingBuilder.setLink(params.get("link"));
       }
-      authMapping.put(code, readingBuilder.build());
-      if (authProvider.sendAuthCode(code)) {
+      final Reading reading = readingBuilder.build();
+      if (authInterface.authChallenge(new Runnable(){
+        @Override
+        public void run() {
+          adapter.createReading(reading);
+        }})) {
         return AUTH_MESSAGE;
       } else {
         return FAIL_MESSAGE;
@@ -120,19 +102,4 @@ public final class ReadingApiInterface implements ApiInterface {
       return INVALID_MESSAGE;
     }
   }
-  
-  @GET
-  public String auth(String code) {
-    if (authMapping.containsKey(code)) {
-      Reading reading = authMapping.remove(code);
-      if (adapter.createReading(reading)) {
-        return AUTH_SUCCESS;
-      } else {
-        return AUTH_FAIL;
-      }
-    } else {
-      return FAIL_MESSAGE;
-    }
-  }
-  
 }

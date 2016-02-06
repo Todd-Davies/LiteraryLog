@@ -10,7 +10,6 @@ import uk.co.todddavies.literarylog.api.ServerFlags;
 import uk.co.todddavies.literarylog.api.ServerModule;
 import uk.co.todddavies.literarylog.api.ServerService;
 import uk.co.todddavies.literarylog.auth.random.RandomFlags;
-import uk.co.todddavies.literarylog.auth.random.RandomModule;
 import uk.co.todddavies.literarylog.auth.twilio.TwilioAuthProviderModule;
 import uk.co.todddavies.literarylog.auth.twilio.TwilioFlags;
 import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule;
@@ -27,7 +26,6 @@ public final class LiteraryLog {
     Injector injector = Flags.bootstrapFlagInjector(args,
         new ServerModule(),
         new CollatedReadingAdapterModule(),
-        new RandomModule(),
         new InjectionModule(),
         new TwilioAuthProviderModule());
     

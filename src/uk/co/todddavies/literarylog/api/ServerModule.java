@@ -1,10 +1,12 @@
 package uk.co.todddavies.literarylog.api;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 
 import edu.uchicago.lowasser.flaginjection.Flags;
 import uk.co.todddavies.literarylog.api.ServerAnnotations.ServiceAddress;
+import uk.co.todddavies.literarylog.api.auth.AuthenticationModule;
 import uk.co.todddavies.literarylog.api.reading.ReadingApiModule;
 
 /**
@@ -22,9 +24,13 @@ public final class ServerModule extends AbstractModule {
     Multibinder<ApiInterface> apis = Multibinder.newSetBinder(binder(), ApiInterface.class);
     // Install api endpoints here
     install(new ReadingApiModule(apis));
-    // Bind the url
-    bind(String.class).annotatedWith(ServiceAddress.class)
-      .toInstance(String.format("http://%s:%s", ServerFlags.getAddress(), ServerFlags.getPort()));
+    install(new AuthenticationModule(apis));
+  }
+  
+  @Provides
+  @ServiceAddress
+  String serviceAddressProvider() {
+    return String.format("http://%s:%s", ServerFlags.getAddress(), ServerFlags.getPort());
   }
 
 }
