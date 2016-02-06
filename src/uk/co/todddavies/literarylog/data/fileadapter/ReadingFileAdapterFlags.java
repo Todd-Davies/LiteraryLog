@@ -3,11 +3,12 @@ package uk.co.todddavies.literarylog.data.fileadapter;
 import com.google.inject.Inject;
 
 import edu.uchicago.lowasser.flaginjection.Flag;
+import uk.co.todddavies.literarylog.app.FlagsClass;
 
 /**
  * Defines the command line flags for the FileAdapter
  */
-public final class ReadingFileAdapterFlags {
+public final class ReadingFileAdapterFlags extends FlagsClass {
 
   private static String path;
   

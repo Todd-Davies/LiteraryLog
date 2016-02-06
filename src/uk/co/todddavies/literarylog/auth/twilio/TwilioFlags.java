@@ -3,11 +3,12 @@ package uk.co.todddavies.literarylog.auth.twilio;
 import com.google.inject.Inject;
 
 import edu.uchicago.lowasser.flaginjection.Flag;
+import uk.co.todddavies.literarylog.app.FlagsClass;
 
 /**
  * Defines the command line flags for Twilio
  */
-public final class TwilioFlags {
+public final class TwilioFlags extends FlagsClass {
 
   private static String id, token, toNumber, fromNumber;
   private static int timeoutSeconds;

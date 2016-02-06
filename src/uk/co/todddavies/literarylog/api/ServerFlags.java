@@ -3,11 +3,12 @@ package uk.co.todddavies.literarylog.api;
 import com.google.inject.Inject;
 
 import edu.uchicago.lowasser.flaginjection.Flag;
+import uk.co.todddavies.literarylog.app.FlagsClass;
 
 /**
  * Defines the command line flags for the Server
  */
-public final class ServerFlags {
+public final class ServerFlags extends FlagsClass {
 
   private static String address;
   private static int port;

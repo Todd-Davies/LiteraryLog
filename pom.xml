@@ -53,9 +53,9 @@
 		<version>4.0</version>
 	</dependency>
 	<dependency>
-    <groupId>com.twilio.sdk</groupId>
-    <artifactId>twilio-java-sdk</artifactId>
-    <version>3.4.5</version>
+	    <groupId>com.twilio.sdk</groupId>
+	    <artifactId>twilio-java-sdk</artifactId>
+	    <version>3.4.5</version>
 	</dependency>
 	<dependency>
   		<groupId>joda-time</groupId>
@@ -67,5 +67,10 @@
   		<artifactId>commons-cli</artifactId>
   		<version>1.2</version>
   	</dependency>
+  	<dependency>
+	    <groupId>org.reflections</groupId>
+	    <artifactId>reflections</artifactId>
+	    <version>0.9.10</version>
+	</dependency>
   </dependencies>
 </project>
