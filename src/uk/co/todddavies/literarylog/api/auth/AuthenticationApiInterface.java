@@ -17,7 +17,7 @@ import uk.co.todddavies.literarylog.auth.random.RandomAnnotations.Seed;
  * Uses authentication providers to validate that a user is authentic.
  */
 @Controller
-final class AuthenticationInterfaceImpl implements AuthenticationInterface, ApiInterface {
+final class AuthenticationApiInterface implements AuthenticationInterface, ApiInterface {
 
   private static final String FAIL_MESSAGE = "Something went wrong :(";
   private static final String AUTH_SUCCESS = "Reading added!";
@@ -28,7 +28,7 @@ final class AuthenticationInterfaceImpl implements AuthenticationInterface, ApiI
   private final AuthProvider authProvider;
   
   @Inject
-  private AuthenticationInterfaceImpl(@Seed Integer seed, AuthProvider authProvider) { 
+  private AuthenticationApiInterface(@Seed Integer seed, AuthProvider authProvider) { 
     this.numberGen = new Random(seed);
     this.authProvider = authProvider;
   }

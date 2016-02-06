@@ -13,13 +13,13 @@ public final class AuthenticationModule extends AbstractModule {
 
   public AuthenticationModule(Multibinder<ApiInterface> apis) {
     // Configure web service bindings here
-    apis.addBinding().to(AuthenticationInterfaceImpl.class);
+    apis.addBinding().to(AuthenticationApiInterface.class);
   }
   
   @Override
   protected void configure() {
     install(new RandomModule());
-    bind(AuthenticationInterface.class).to(AuthenticationInterfaceImpl.class);
+    bind(AuthenticationInterface.class).to(AuthenticationApiInterface.class);
   }
 
 }
