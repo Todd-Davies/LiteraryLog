@@ -3,6 +3,7 @@ package uk.co.todddavies.literarylog.api;
 
 import java.util.Set;
 
+import org.rapidoid.config.Conf;
 import org.rapidoid.http.fast.On;
 import com.google.inject.Inject;
 
@@ -15,12 +16,13 @@ public final class ServerService {
   
   @Inject
   ServerService(Set<ApiInterface> interfaces) {
+    Conf.set("address", ServerFlags.getAddress());
+    Conf.set("port", ServerFlags.getPort());
     this.interfaces = interfaces;
   }
   
   public void start() {
     On.controllers(interfaces.toArray());
-
   }
   
 }

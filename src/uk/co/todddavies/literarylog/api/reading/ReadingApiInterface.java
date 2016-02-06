@@ -13,8 +13,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
 import uk.co.todddavies.literarylog.api.ApiInterface;
-import uk.co.todddavies.literarylog.app.Annotations.Seed;
 import uk.co.todddavies.literarylog.auth.AuthProvider;
+import uk.co.todddavies.literarylog.auth.random.RandomAnnotations.Seed;
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 import uk.co.todddavies.literarylog.data.collator.CollatedReadingAdapterModule.CollatedReadings;
 import uk.co.todddavies.literarylog.models.Reading;

@@ -1,32 +1,20 @@
 package uk.co.todddavies.literarylog.auth.twilio;
 
-import uk.co.todddavies.literarylog.auth.AuthProvider;
-
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
+
+import edu.uchicago.lowasser.flaginjection.Flags;
+import uk.co.todddavies.literarylog.auth.AuthProvider;
 
 /**
  * Provides a method of authenticating the user using Twilio and SMS
  */
 public final class TwilioAuthProviderModule extends AbstractModule {
   
-  private final TwilioAuthProvider provider;
-  
-  public TwilioAuthProviderModule(String id,
-      String token,
-      String toNumber,
-      String fromNumber,
-      String url,
-      int timeout) {
-    provider = new TwilioAuthProvider(id, token, toNumber, fromNumber, url, timeout);
-  }
+  public TwilioAuthProviderModule() {}
   
   @Override
-  protected void configure() {}
-
-  @Provides
-  AuthProvider twilioAuthProvider() {
-    return provider;
+  protected void configure() {
+    install(Flags.flagBindings(TwilioFlags.class));
+    bind(AuthProvider.class).to(TwilioAuthProvider.class);
   }
-  
 }

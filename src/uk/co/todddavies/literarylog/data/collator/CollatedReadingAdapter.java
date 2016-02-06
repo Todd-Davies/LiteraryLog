@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
-import uk.co.todddavies.literarylog.data.fileadapter.FileAdapterModule.LocalReadings;
+import uk.co.todddavies.literarylog.data.fileadapter.ReadingFileAdapterModule.LocalReadings;
 import uk.co.todddavies.literarylog.data.goodreads.GoodreadsApiAdapterModule.GoodreadsReadings;
 import uk.co.todddavies.literarylog.models.Reading;
 import uk.co.todddavies.literarylog.models.Status;

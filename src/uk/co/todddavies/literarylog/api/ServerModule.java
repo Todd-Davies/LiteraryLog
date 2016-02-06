@@ -1,10 +1,10 @@
 package uk.co.todddavies.literarylog.api;
 
-import org.rapidoid.config.Conf;
-
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 
+import edu.uchicago.lowasser.flaginjection.Flags;
+import uk.co.todddavies.literarylog.api.ServerAnnotations.ServiceAddress;
 import uk.co.todddavies.literarylog.api.reading.ReadingApiModule;
 
 /**
@@ -12,16 +12,19 @@ import uk.co.todddavies.literarylog.api.reading.ReadingApiModule;
  */
 public final class ServerModule extends AbstractModule {
   
-  public ServerModule(String[] args) {
-    // Configures Rapidoid
-    Conf.args(args);
-  }
+  public ServerModule() {}
   
   @Override
   protected void configure() {
+    // Install the flag bindings
+    install(Flags.flagBindings(ServerFlags.class));
+    // Create a multibinder for the different endpoints
     Multibinder<ApiInterface> apis = Multibinder.newSetBinder(binder(), ApiInterface.class);
-    // Install api endpoings here
+    // Install api endpoints here
     install(new ReadingApiModule(apis));
+    // Bind the url
+    bind(String.class).annotatedWith(ServiceAddress.class)
+      .toInstance(String.format("http://%s:%s", ServerFlags.getAddress(), ServerFlags.getPort()));
   }
 
 }

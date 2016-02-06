@@ -18,8 +18,8 @@ final class ArgsParser {
     HashMap<String, String> output = new HashMap<>();
     for (String arg : args) {
       int equalsIndex = arg.indexOf("=");
-      if (equalsIndex < 0) break;
-      output.put(arg.substring(0,equalsIndex), arg.substring(equalsIndex + 1));
+      if (equalsIndex < 0 || arg.contains("twilio")) output.put(arg, ""); //break;
+      else output.put(arg.substring(0,equalsIndex), arg.substring(equalsIndex + 1));
     }
     return output;
   }
@@ -31,7 +31,11 @@ final class ArgsParser {
     String[] output = new String[args.size()];
     int i = 0;
     for (Entry<String, String> entry : args.entrySet()) {
-      output[i++] = entry.getKey() + "=" + entry.getValue();
+      if (entry.getValue() == "") {
+        output[i++] = entry.getKey();
+      } else {
+        output[i++] = entry.getKey() + "=" + entry.getValue();
+      }
     }
     return output;
   }
