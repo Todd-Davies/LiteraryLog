@@ -17,14 +17,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Todd/.m2/repository/org/reflections/reflections/0.9.10/reflections-0.9.10.jar" sourcepath="C:/Users/Todd/.m2/repository/org/reflections/reflections/0.9.10/reflections-0.9.10-sources.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.reflections"/>
-			<attribute name="maven.artifactId" value="reflections"/>
-			<attribute name="maven.version" value="0.9.10"/>
-			<attribute name="maven.scope" value="compile"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

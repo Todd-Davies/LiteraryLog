@@ -86,7 +86,7 @@ public final class ReadingApiInterface implements ApiInterface {
         readingBuilder.setRating(Integer.parseInt(params.get("rating")));
       }
       if (params.containsKey("link")) {
-        readingBuilder.setLink(params.get("link"));
+        readingBuilder.setLink("http://" + params.get("link"));
       }
       final Reading reading = readingBuilder.build();
       if (authInterface.authChallenge(new Runnable(){
