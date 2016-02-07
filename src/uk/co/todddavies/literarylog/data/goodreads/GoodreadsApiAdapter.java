@@ -27,9 +27,9 @@ import uk.co.todddavies.literarylog.models.Status;
 final class GoodreadsApiAdapter implements ReadingStorageAdapter {
   
   private static final ImmutableMap<Status, String> URL_ENDPOINTS = ImmutableMap.<Status, String>of(
-      Status.READ, "http://www.goodreads.com/review/list_rss/39367252?shelf=read",
-      Status.PENDING, "http://www.goodreads.com/review/list_rss/39367252?shelf=to-read",
-      Status.READING, "http://www.goodreads.com/review/list_rss/39367252?shelf=currently-reading");
+      Status.READ, "http://www.goodreads.com/review/list_rss/%s?shelf=read",
+      Status.PENDING, "http://www.goodreads.com/review/list_rss/%s?shelf=to-read",
+      Status.READING, "http://www.goodreads.com/review/list_rss/%s?shelf=currently-reading");
   
   private static final CacheLoader<String, ImmutableList<Reading>> READING_LOADER =
       new CacheLoader<String, ImmutableList<Reading>>() {   
@@ -61,7 +61,8 @@ final class GoodreadsApiAdapter implements ReadingStorageAdapter {
   /**
    * Gets the response content from a URL. 
    */
-  private static String getContent(String targetUrl) throws IOException {
+  private static String getContent(String goodreadsUrl) throws IOException {
+    String targetUrl = String.format(goodreadsUrl, GoodreadsFlags.getUserId());
     try (Scanner s = new Scanner(new URL(targetUrl).openStream())) {
       return s.useDelimiter("\\A").next();
     }

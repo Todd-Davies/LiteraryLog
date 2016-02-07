@@ -7,6 +7,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Provides;
 
+import edu.uchicago.lowasser.flaginjection.Flags;
 import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
 
 /**
@@ -21,7 +22,9 @@ public final class GoodreadsApiAdapterModule extends AbstractModule {
   }
   
   @Override
-  protected void configure() {}
+  protected void configure() {
+    install(Flags.flagBindings(GoodreadsFlags.class));
+  }
   
   @Provides
   @GoodreadsReadings
