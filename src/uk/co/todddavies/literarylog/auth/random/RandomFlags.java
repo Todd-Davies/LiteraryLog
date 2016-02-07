@@ -3,7 +3,7 @@ package uk.co.todddavies.literarylog.auth.random;
 import com.google.inject.Inject;
 
 import edu.uchicago.lowasser.flaginjection.Flag;
-import uk.co.todddavies.literarylog.app.FlagsClass;
+import edu.uchicago.lowasser.flaginjection.FlagsClass;
 
 /**
  * Defines the command line flags for RandomModule

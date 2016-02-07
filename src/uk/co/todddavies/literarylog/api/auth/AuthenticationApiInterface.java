@@ -1,12 +1,13 @@
 package uk.co.todddavies.literarylog.api.auth;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.rapidoid.annotation.Controller;
 import org.rapidoid.annotation.GET;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 
 import uk.co.todddavies.literarylog.api.ApiInterface;
@@ -23,7 +24,11 @@ final class AuthenticationApiInterface implements AuthenticationInterface, ApiIn
   private static final String AUTH_SUCCESS = "Reading added!";
   private static final String AUTH_FAIL = "Invalid auth code.";
   
-  private final static Map<String, Runnable> authMapping = new HashMap<>();
+  private final static Cache<String, Runnable> cache = CacheBuilder.newBuilder()
+      .expireAfterWrite(10, TimeUnit.MINUTES)
+      .maximumSize(30)
+      .build();
+  
   private final Random numberGen;
   private final AuthProvider authProvider;
   
@@ -38,7 +43,7 @@ final class AuthenticationApiInterface implements AuthenticationInterface, ApiIn
    */
   private String generateCode() {
     Integer key = null;
-    while (key == null && !authMapping.containsKey(key)) {
+    while (key == null || cache.getIfPresent(key) != null) {
       key = numberGen.nextInt(1000000);
     }
     return String.format("%06d", key);
@@ -49,15 +54,16 @@ final class AuthenticationApiInterface implements AuthenticationInterface, ApiIn
    */
   public boolean authChallenge(Runnable function) {
     String code = generateCode();
-    authMapping.put(code, function);
+    cache.put(code, function);
     return authProvider.sendAuthCode(code);
   }
   
   @GET(uri="/auth")
   public String auth(String code) {
-    if (authMapping.containsKey(code)) {
+    Runnable runnable = cache.getIfPresent(code);
+    if (runnable != null) {
       try {
-        authMapping.remove(code).run();
+        runnable.run();
         return AUTH_SUCCESS;
       } catch (Exception e) {
         e.printStackTrace();

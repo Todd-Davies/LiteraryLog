@@ -15,20 +15,19 @@
  */
 package edu.uchicago.lowasser.flaginjection;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import com.google.inject.BindingAnnotation;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @BindingAnnotation
-public @interface Flag {
-  String name();
+@Target({ FIELD, PARAMETER, METHOD })
+@Retention(RUNTIME)
+@interface RuntimeArguments {
 
-  String description() default "";
-  
-  boolean optional() default false;
 }
