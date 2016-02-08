@@ -6,8 +6,14 @@ import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import uk.co.todddavies.literarylog.data.ReadingHelper;
+import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
+import uk.co.todddavies.literarylog.models.Reading;
+import uk.co.todddavies.literarylog.models.Status;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -17,11 +23,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
-
-import uk.co.todddavies.literarylog.data.ReadingHelper;
-import uk.co.todddavies.literarylog.data.ReadingStorageAdapter;
-import uk.co.todddavies.literarylog.models.Reading;
-import uk.co.todddavies.literarylog.models.Status;
 
 /**
  * Adapter for loading <code>Reading</code>s from files in a directory.
@@ -72,7 +73,8 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
    * TODO: Make this not scan all readings.
    */
   private Optional<Reading> selectReading(Predicate<Reading> predicate) {
-    ImmutableList<Reading> satisfied = selectReadings(storageDirectory, cache, predicate);
+    ImmutableList<Reading> satisfied = selectReadings(storageDirectory, cache, predicate)
+        .keySet().asList();
     return (satisfied.size() > 0)
         ? Optional.<Reading>of(satisfied.get(0))
         : Optional.<Reading>absent(); 
@@ -81,18 +83,18 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
   /**
    * Loads all readings that satisfy a predicate.
    */
-  private static ImmutableList<Reading> selectReadings(Path path,
+  private static ImmutableMap<Reading, Path> selectReadings(Path path,
       LoadingCache<Path, Optional<Reading>> cache,
       Predicate<Reading> predicate) {
-    ImmutableList.Builder<Reading> list = new ImmutableList.Builder<>();
+    ImmutableMap.Builder<Reading, Path> list = new ImmutableMap.Builder<>();
     try(DirectoryStream<Path> stream = java.nio.file.Files.newDirectoryStream(path)) {
       for (Path file : stream) {
         if (file.toFile().isDirectory()) {
-          list.addAll(selectReadings(file, cache, predicate));
+          list.putAll(selectReadings(file, cache, predicate));
         } else {
           Optional<Reading> reading = cache.get(file);
           if (reading.isPresent() && predicate.apply(reading.get())) {
-            list.add(reading.get());
+            list.put(reading.get(), file);
           }
         }
       }
@@ -105,7 +107,7 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
   
   @Override
   public ImmutableList<Reading> getReadings() {
-    return selectReadings(storageDirectory, cache, TRUE_PREDICATE);
+    return selectReadings(storageDirectory, cache, TRUE_PREDICATE).keySet().asList();
   }
 
   @Override
@@ -122,7 +124,7 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
     return selectReadings(storageDirectory, cache, new Predicate<Reading>() {
       @Override public boolean apply(Reading reading) {
         return reading.status == status;
-      }});
+      }}).keySet().asList();
   }
 
   @Override
@@ -130,7 +132,7 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
     return selectReadings(storageDirectory, cache, new Predicate<Reading>() {
       @Override public boolean apply(Reading reading) {
         return ReadingHelper.doesMatch(reading, params);
-      }});
+      }}).keySet().asList();
   }
 
   @Override
@@ -162,5 +164,27 @@ final class ReadingFileAdapter implements ReadingStorageAdapter {
       return false;
     }
     return true;
+  }
+  
+  @Override
+  public boolean changeReadingStatus(int id, Status newStatus) {
+    // Search for the path of the reading
+    final ImmutableMap<String,String> searchParams =
+        ImmutableMap.<String, String>of("id", Integer.toString(id));
+    Entry<Reading, Path> matching = selectReadings(storageDirectory, cache, new Predicate<Reading>() {
+      @Override public boolean apply(Reading reading) {
+        return ReadingHelper.doesMatch(reading, searchParams);
+      }}).entrySet().asList().get(0);
+    // Create the new reading
+    Reading newReading = Reading.newBuilder(matching.getKey()).setStatus(newStatus).build();
+    // Then simply create the reading
+    if(createReading(newReading)) {
+      // Delete the old file
+      File filePath = matching.getValue().toFile();
+      filePath.delete();
+      return true;
+    } else {
+      return false;
+    }
   } 
 }

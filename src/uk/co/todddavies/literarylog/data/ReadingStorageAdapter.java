@@ -35,4 +35,9 @@ public interface ReadingStorageAdapter {
    */
   public boolean createReading(Reading reading);
   
+  /**
+   * Updates the status of <code>Reading</code>
+   */
+  public boolean changeReadingStatus(int id, Status newStatus);
+  
 }

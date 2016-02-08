@@ -102,4 +102,9 @@ public final class ReadingApiInterface implements ApiInterface {
       return INVALID_MESSAGE;
     }
   }
+  
+  @GET(uri="/markRead")
+  public boolean markRead(int id) {
+    return adapter.changeReadingStatus(id, Status.READ);
+  }
 }

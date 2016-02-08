@@ -111,4 +111,10 @@ final class GoodreadsApiAdapter implements ReadingStorageAdapter {
     // Not implemented with the read only API.
     return false;
   }
+
+  @Override
+  public boolean changeReadingStatus(int id, Status newStatus) {
+    // Not implemented with the read only API.
+    return false;
+  }
 }

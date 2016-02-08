@@ -77,4 +77,12 @@ final class CollatedReadingAdapter implements ReadingStorageAdapter {
     return false;
   }
 
+  @Override
+  public boolean changeReadingStatus(int id, Status newStatus) {
+    for (ReadingStorageAdapter adapter : adapters) {
+      if (adapter.changeReadingStatus(id, newStatus)) return true;
+    }
+    return false;
+  }
+
 }
