@@ -44,12 +44,11 @@ final class TwilioAuthProvider implements AuthProvider {
     }
   }
   
-  @Override
-  public boolean sendAuthCode(String code) {
+  private boolean authenticate(String message) {
     if (rateLimit()) return false;
     try {
       ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-      params.add(new BasicNameValuePair("Body", url + AUTH_EXTENSION + code));
+      params.add(new BasicNameValuePair("Body", message));
       params.add(new BasicNameValuePair("To", TwilioFlags.getToNumber()));
       params.add(new BasicNameValuePair("From", TwilioFlags.getFromNumber()));
    
@@ -59,6 +58,16 @@ final class TwilioAuthProvider implements AuthProvider {
       return false;
     }
     return true;
+  }
+  
+  @Override
+  public boolean sendAuthCode(String code) {
+    return authenticate(url + AUTH_EXTENSION + code);
+  }
+  
+  @Override
+  public boolean sendAuthCode(String code, String message) {
+    return authenticate(message + "\n" + url + AUTH_EXTENSION + code);
   }
 
 }

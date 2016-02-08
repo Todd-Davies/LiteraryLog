@@ -48,14 +48,17 @@ final class AuthenticationApiInterface implements AuthenticationInterface, ApiIn
     }
     return String.format("%06d", key);
   }
-  
-  /**
-   * Issue a challenge to the user to authenticate themselves.
-   */
+
   public boolean authChallenge(Runnable function) {
     String code = generateCode();
     cache.put(code, function);
     return authProvider.sendAuthCode(code);
+  }
+  
+  public boolean authChallenge(Runnable function, String message) {
+    String code = generateCode();
+    cache.put(code, function);
+    return authProvider.sendAuthCode(code, message);
   }
   
   @GET(uri="/auth")

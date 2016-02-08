@@ -31,6 +31,8 @@ public final class ReadingApiInterface implements ApiInterface {
   private final String AUTH_MESSAGE = "Check your phone for a confirmation code.";
   private final String FAIL_MESSAGE = "Something went wrong :(";
   private final String INVALID_MESSAGE = "Invalid parameters";
+  private final String ADD_READING_MSG = "Please verify that you want to add the reading '%s'";
+  private final String MARK_READ_MSG = "Please verify that you want to mark '%s' as read";
   
   @Inject
   private ReadingApiInterface(@CollatedReadings ReadingStorageAdapter adapter,
@@ -89,11 +91,12 @@ public final class ReadingApiInterface implements ApiInterface {
         readingBuilder.setLink("http://" + params.get("link"));
       }
       final Reading reading = readingBuilder.build();
-      if (authInterface.authChallenge(new Runnable(){
+      Runnable addReading = new Runnable(){
         @Override
         public void run() {
           adapter.createReading(reading);
-        }})) {
+        }};
+      if (authInterface.authChallenge(addReading, String.format(ADD_READING_MSG, reading.name))) {
         return AUTH_MESSAGE;
       } else {
         return FAIL_MESSAGE;
@@ -105,11 +108,16 @@ public final class ReadingApiInterface implements ApiInterface {
   
   @GET(uri="/markRead")
   public String markRead(final int id) {
-    if (authInterface.authChallenge(new Runnable(){
+    Runnable markRead = new Runnable(){
       @Override
       public void run() {
         adapter.changeReadingStatus(id, Status.READ);
-      }})) {
+      }};
+    Optional<Reading> readingWithId = adapter.getReadingById(id);
+    String msg = readingWithId.isPresent()
+        ? readingWithId.get().name
+        : "id:" + Integer.toString(id);
+    if (authInterface.authChallenge(markRead, String.format(MARK_READ_MSG, msg))) {
       return AUTH_MESSAGE;
     } else {
       return FAIL_MESSAGE;

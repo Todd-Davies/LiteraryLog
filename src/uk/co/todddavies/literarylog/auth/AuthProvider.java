@@ -10,6 +10,12 @@ public interface AuthProvider {
    * Sends the auth code to the user
    * @return Whether the operation was successful.
    */
-  public boolean sendAuthCode(String string);
+  public boolean sendAuthCode(String code);
+  
+  /**
+   * Sends the auth code to the user with the given message
+   * @return Whether the operation was successful.
+   */
+  public boolean sendAuthCode(String code, String message);
   
 }
