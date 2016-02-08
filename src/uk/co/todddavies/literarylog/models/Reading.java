@@ -42,6 +42,18 @@ public final class Reading {
     return new Builder();
   }
   
+  public static Builder newBuilder(Reading existing) {
+    Builder out = new Builder(
+        existing.name,existing.description, existing.status, existing.type);
+    if (existing.link.isPresent()) {
+      out.setLink(existing.link.get());
+    }
+    if (existing.rating.isPresent()) {
+      out.setRating(existing.rating.get());
+    }
+    return out;
+  }
+  
   public static Builder newBuilder(String name, String description, Status status,
       Type type) {
     return new Builder(name, description, status, type);
@@ -77,48 +89,54 @@ public final class Reading {
       return name;
     }
 
-    public void setName(String name) {
+    public Builder setName(String name) {
       this.name = name;
+      return this;
     }
 
     public Optional<Integer> getRating() {
       return rating;
     }
 
-    public void setRating(int rating) {
+    public Builder setRating(int rating) {
       this.rating = Optional.of(rating);
+      return this;
     }
 
     public String getDescription() {
       return description;
     }
 
-    public void setDescription(String description) {
+    public Builder setDescription(String description) {
       this.description = description;
+      return this;
     }
 
     public Status getStatus() {
       return status;
     }
 
-    public void setStatus(Status status) {
+    public Builder setStatus(Status status) {
       this.status = status;
+      return this;
     }
 
     public Optional<String> getLink() {
       return link;
     }
 
-    public void setLink(String link) {
+    public Builder setLink(String link) {
       this.link = Optional.of(link);
+      return this;
     }
 
     public Type getType() {
       return type;
     }
 
-    public void setType(Type type) {
+    public Builder setType(Type type) {
       this.type = type;
+      return this;
     }
   }  
 }
