@@ -104,7 +104,15 @@ public final class ReadingApiInterface implements ApiInterface {
   }
   
   @GET(uri="/markRead")
-  public boolean markRead(int id) {
-    return adapter.changeReadingStatus(id, Status.READ);
+  public String markRead(final int id) {
+    if (authInterface.authChallenge(new Runnable(){
+      @Override
+      public void run() {
+        adapter.changeReadingStatus(id, Status.READ);
+      }})) {
+      return AUTH_MESSAGE;
+    } else {
+      return FAIL_MESSAGE;
+    }   
   }
 }
