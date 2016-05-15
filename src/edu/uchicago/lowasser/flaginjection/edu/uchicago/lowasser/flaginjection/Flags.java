@@ -204,9 +204,9 @@ public final class Flags {
         final String value = commandLine.getOptionValue(flagAnnotation.name());
 
         try {
-          Object result = Converters.converterFor(literal).parse(value);
+          Object result;
 
-          if (result == null) {
+          if (value == null || (result = Converters.converterFor(literal).parse(value)) == null) {
             if (flagAnnotation.optional()) {
               bind(literal).annotatedWith(flagAnnotation).toProvider(Providers.of(null));
               continue;

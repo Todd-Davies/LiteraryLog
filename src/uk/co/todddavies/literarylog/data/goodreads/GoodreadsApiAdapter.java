@@ -2,6 +2,7 @@ package uk.co.todddavies.literarylog.data.goodreads;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,10 @@ final class GoodreadsApiAdapter implements ReadingStorageAdapter {
    */
   private static String getContent(String goodreadsUrl) throws IOException {
     String targetUrl = String.format(goodreadsUrl, GoodreadsFlags.getUserId());
-    try (Scanner s = new Scanner(new URL(targetUrl).openStream())) {
+    URLConnection connection = new URL(targetUrl).openConnection();
+    connection.setConnectTimeout(GoodreadsFlags.getGoodreadsTimeout());
+    connection.setReadTimeout(GoodreadsFlags.getGoodreadsTimeout());
+    try (Scanner s = new Scanner(connection.getInputStream())) {
       return s.useDelimiter("\\A").next();
     }
   }
